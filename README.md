@@ -23,6 +23,6 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.di
     'ui_mode': 'dark'
   });;
   ```
-TUTORIAL VIA VIDIO : https://drive.google.com/file/d/1eBTGQeVF_yZDZ4CvFV8iTMGFx92E0Dtb/view?usp=drivesdk
+TUTORIAL AMBIL API CEK PEMBAYARAN VIA VIDIO : https://drive.google.com/file/d/1eBTGQeVF_yZDZ4CvFV8iTMGFx92E0Dtb/view?usp=drivesdk
 
 CARA ISI INI BISA CHAT ADMIN https://t.me/ARI_VPN_STORE
