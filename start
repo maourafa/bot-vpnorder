@@ -48,7 +48,6 @@ setup_bot() {
         curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - || echo -e "${red}Failed to download Node.js setup${neutral}"
         apt-get install -y nodejs || echo -e "${red}Failed to install Node.js${neutral}"
         npm install -g npm@latest
-        npm install -g pm2
     else
         echo -e "${green}Node.js is already installed, skipping...${neutral}"
     fi
@@ -131,8 +130,36 @@ server_app() {
   \"API_KEY\": \"$apikey\"
 }" >/root/BotVPN/.vars.json
 
-    pm2 start /root/BotVPN/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
-    pm2 save
+SERVICE_NAME=botvpn
+SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
+WORK_DIR="root/BotVPN"
+NODE_PATH=$(which node)
+
+# Buat service file
+sudo bash -c "cat > $SERVICE_FILE" <<EOF
+[Unit]
+Description=BotVPN Service
+After=network.target
+
+[Service]
+WorkingDirectory=$WORK_DIR
+ExecStart=$NODE_PATH app.js
+Restart=always
+RestartSec=5
+User=root
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Reload systemd & aktifkan service
+sudo systemctl daemon-reload
+sudo systemctl enable $SERVICE_NAME
+sudo systemctl start $SERVICE_NAME
+
+# Tampilkan status
+sudo systemctl status $SERVICE_NAME --no-pager
 
     printf "\033[5A\033[0J"
     echo -e "       Status Server is "$(cek_status)""
