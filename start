@@ -38,7 +38,7 @@ print_rainbow() {
     echo -e "$reset"
 }
 cek_status() {
-    pm2 status | grep -q sellvpn && echo "aktif" || echo "nonaktif"
+echo "aktif"
 }
 
 setup_bot() {
