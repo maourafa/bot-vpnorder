@@ -133,7 +133,6 @@ server_app() {
 SERVICE_NAME=botvpn
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
 WORK_DIR="root/BotVPN"
-NODE_PATH=$(which node)
 
 # Buat service file
 sudo bash -c "cat > $SERVICE_FILE" <<EOF
@@ -143,7 +142,7 @@ After=network.target
 
 [Service]
 WorkingDirectory=$WORK_DIR
-ExecStart=$NODE_PATH app.js
+ExecStart=node app.js
 Restart=always
 RestartSec=5
 User=root
