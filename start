@@ -132,7 +132,7 @@ server_app() {
 
 SERVICE_NAME=botvpn
 SERVICE_FILE=/etc/systemd/system/$SERVICE_NAME.service
-WORK_DIR="root/BotVPN"
+WORK_DIR="/root/BotVPN"
 
 # Buat service file
 sudo bash -c "cat > $SERVICE_FILE" <<EOF
