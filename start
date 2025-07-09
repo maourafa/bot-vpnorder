@@ -53,7 +53,7 @@ setup_bot() {
         echo -e "${green}Node.js is already installed, skipping...${neutral}"
     fi
 
-    if [ ! -f /root/BotVPN/app.js ]; then
+    if [ ! -f /root/BotVPN-POTATO/app.js ]; then
         git clone https://github.com/AutoFTbot/BotVPN.git /root/BotVPN
     fi
 
@@ -62,7 +62,7 @@ setup_bot() {
     fi
 
     if [ -n "$(ls -A /root/BotVPN)" ]; then
-        chmod +x /root/BotVPN/*
+        chmod +x /root/BotVPN-POTATO/*
     fi
 }
 
@@ -119,7 +119,7 @@ server_app() {
             echo -e "${red}GROUP ID tidak boleh kosong. Silakan coba lagi.${neutral}"
         fi
     done
-    rm -f /root/BotVPN/.vars.json
+    rm -f /root/BotVPN-POTATO/.vars.json
     echo "{
   \"BOT_TOKEN\": \"$token\",
   \"USER_ID\": \"$adminid\",
@@ -129,9 +129,9 @@ server_app() {
   \"DATA_QRIS\": \"$dataqris\",
   \"MERCHANT_ID\": \"$merchantid\",
   \"API_KEY\": \"$apikey\"
-}" >/root/BotVPN/.vars.json
+}" >/root/BotVPN-POTATO/.vars.json
 
-    pm2 start /root/BotVPN/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
+    pm2 start /root/BotVPN-POTATO/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
     pm2 save
 
     printf "\033[5A\033[0J"

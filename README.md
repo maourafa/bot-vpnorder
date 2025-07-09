@@ -1,6 +1,6 @@
-# FTVPN Bot
+# FT API Potato Bot
 
-FTVPN Bot adalah bot serba otomatis untuk membeli layanan VPN dengan mudah dan cepat. Nikmati kemudahan dan kecepatan dalam layanan VPN dengan bot kami! Dilengkapi dengan sistem pembayaran QRIS untuk kemudahan transaksi.
+  FT API Potato Bot adalah bot serba otomatis untuk membeli layanan VPN dengan mudah dan cepat. Nikmati kemudahan dan kecepatan dalam layanan VPN dengan bot kami! Dilengkapi dengan sistem pembayaran QRIS untuk kemudahan transaksi.
 
 ## Fitur
 
@@ -16,23 +16,24 @@ FTVPN Bot adalah bot serba otomatis untuk membeli layanan VPN dengan mudah dan c
 - Node.js
 - SQLite3
 - Axios
+- qs
 - Telegraf (untuk integrasi dengan Telegram Bot)
 - QRIS Payment Gateway
 
 ## Installasi Otomatis
 ```bash
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/AutoFTbot/BotVPN/refs/heads/main/start -o start && bash start sellvpn && [ $? -eq 0 ] && rm -f start
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/arivpnstores/BotVPN-POTATO/main/start -o start && bash start sellvpn && [ $? -eq 0 ] && rm -f start
 ```
 
 ## install Manual
 
 1. Clone repository ini:
    ```bash
-   git clone https://github.com/AutoFTbot/BotVPN.git
+   git clone https://github.com/arivpnstores/BotVPN-POTATO.git
    ```
 2. Masuk ke direktori proyek:
    ```bash
-   cd BotVPN
+   cd BotVPN-POTATO
    ```
 3. Install dependencies:
    ```bash
@@ -70,6 +71,7 @@ Untuk menggunakan sistem pembayaran QRIS, Anda perlu menyiapkan:
 2. MERCHANT ID: ID merchant yang terdaftar di okeconnect
 3. API KEY: Api key yang terdaftar di okeconnect
 4. GROUP ID: ID grup Telegram (misal: -1001234567890) untuk notifikasi
+5. Untuk resultcek Bisa tanya ARIVPNSTORE untuk cara mendapat kan apikey orderkuota
 
 ## Struktur Proyek
 
@@ -88,6 +90,7 @@ Jika Anda ingin berkontribusi pada proyek ini, silakan fork repository ini dan b
 Jika Anda memiliki pertanyaan atau masalah, silakan hubungi kami di:
 - [YHA](https://t.me/yha_bot)
 - [AutoFTbot69](https://t.me/Autoftbot69)
+- [AriVpnStore](https://t.me/ARI_VPN_STORE)
 
 ## Thanks To
 ```
