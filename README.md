@@ -22,4 +22,4 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.di
     'ui_mode': 'dark'
   });;
   ```
-t.me/ARI_VPN_STORE
+https://t.me/ARI_VPN_STORE
