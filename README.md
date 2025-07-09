@@ -4,7 +4,7 @@
 sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/arivpnstores/BotVPN/main/start -o start && bash start sellvpn && [ $? -eq 0 ] && rm -f start
 ```
 
-## CARA ISI INI BISA CHAT ADMIN
+## CEK PEMBAYARAN 
 ```const data = qs.stringify({
     'app_reg_id': '-----',
     'phone_uuid': '-',
@@ -23,4 +23,6 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.di
     'ui_mode': 'dark'
   });;
   ```
-https://t.me/ARI_VPN_STORE
+TUTORIAL VIA VIDIO : https://drive.google.com/file/d/1eBTGQeVF_yZDZ4CvFV8iTMGFx92E0Dtb/view?usp=drivesdk
+
+CARA ISI INI BISA CHAT ADMIN https://t.me/ARI_VPN_STORE
