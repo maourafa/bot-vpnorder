@@ -38,7 +38,7 @@ print_rainbow() {
     echo -e "$reset"
 }
 cek_status() {
-    pm2 status | grep -q sellvpn && echo "aktif" || echo "nonaktif"
+    pm2 status | grep -q botvpn && echo "aktif" || echo "nonaktif"
 }
 
 setup_bot() {
@@ -69,7 +69,7 @@ setup_bot() {
 server_app() {
     clear
     echo -e "${orange}─────────────────────────────────────────${neutral}"
-    echo -e "   ${green}.:::. BOT SELLVPN TELEGRAM .:::.   ${neutral}"
+    echo -e "   ${green}.:::. BOT VPN TELEGRAM .:::.   ${neutral}"
     echo -e "${orange}─────────────────────────────────────────${neutral}"
     echo -e "       ${green}•${neutral} server create user"
     echo -e "       ${green}•${neutral} server delete user"
@@ -131,7 +131,7 @@ server_app() {
   \"API_KEY\": \"$apikey\"
 }" >/root/BotVPN-POTATO/.vars.json
 
-    pm2 start /root/BotVPN-POTATO/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
+    pm2 start /root/BotVPN-POTATO/app.js --name botvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
     pm2 save
 
     printf "\033[5A\033[0J"
@@ -141,10 +141,10 @@ server_app() {
     echo -e "${green}Type ${bold_white}/start${neutral} or ${bold_white}menu${neutral} in the telegram bot${neutral}"
 }
 
-if [[ ${1} == "sellvpn" ]]; then
+if [[ ${1} == "botvpn" ]]; then
     setup_bot
     server_app
 else
-    echo -e "${red}Invalid command. Use: ${yellow}start sellvpn${neutral}"
+    echo -e "${red}Invalid command. Use: ${yellow}start botvpn${neutral}"
     exit 1
 fi 

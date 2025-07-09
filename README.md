@@ -22,7 +22,7 @@
 
 ## Installasi Otomatis
 ```bash
-sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/arivpnstores/BotVPN-POTATO/main/start -o start && bash start sellvpn && [ $? -eq 0 ] && rm -f start
+sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/arivpnstores/BotVPN-POTATO/main/start -o start && bash start botvpn && [ $? -eq 0 ] && rm -f start
 ```
 
 ## install Manual
@@ -59,7 +59,7 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.di
 6. Service BOT:
    ```bash
    npm i -g pm2
-   pm2 start app.js --name sellvpn
+   pm2 start app.js --name botvpn
    pm2 startup
    pm2 save
    ```
@@ -78,7 +78,7 @@ Untuk menggunakan sistem pembayaran QRIS, Anda perlu menyiapkan:
 - `app.js`: File utama yang mengatur bot dan server
 - `modules/create.js`: Modul untuk membuat akun VPN baru
 - `modules/renew.js`: Modul untuk memperbarui akun VPN yang sudah ada
-- `sellvpn.db`: Database SQLite yang menyimpan data pengguna dan server
+- `botvpn.db`: Database SQLite yang menyimpan data pengguna dan server
 - `.vars.json`: File konfigurasi untuk menyimpan pengaturan bot, QRIS, dan grup
 
 ## Kontribusi
