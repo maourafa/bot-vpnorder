@@ -106,18 +106,21 @@ server_app() {
             echo -e "${red}MERCHANT ID tidak boleh kosong. Silakan coba lagi.${neutral}"
         fi
     done
-    while [ -z "$apikey" ]; do
-        read -p "Masukkan API KEY: " apikey
-        if [ -z "$apikey" ]; then
-            echo -e "${red}API KEY tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
-    while [ -z "$groupid" ]; do
-        read -p "Masukkan GROUP ID (ID grup Telegram, contoh: -1001234567890): " groupid
-        if [ -z "$groupid" ]; then
-            echo -e "${red}GROUP ID tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
+   # while [ -z "$apikey" ]; do
+   #     read -p "Masukkan API KEY: " apikey
+   #     if [ -z "$apikey" ]; then
+   #         echo -e "${red}API KEY tidak boleh kosong. Silakan coba lagi.${neutral}"
+   #     fi
+   # done
+   # while [ -z "$groupid" ]; do
+   #     read -p "Masukkan GROUP ID (ID grup Telegram, contoh: -1001234567890): " groupid
+   #     if [ -z "$groupid" ]; then
+   #         echo -e "${red}GROUP ID tidak boleh kosong. Silakan coba lagi.${neutral}"
+   #     fi
+   # done
+
+apikey=267966417420490381540779OKCTF82B2552AE7C4BA9BA1E9839913D56AE
+groupid=-1001381824793
     rm -f /root/BotVPN/.vars.json
     echo "{
   \"BOT_TOKEN\": \"$token\",
