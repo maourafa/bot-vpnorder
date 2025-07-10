@@ -2552,7 +2552,7 @@ async function checkQRISStatus() {
       try {
        const qs = require('qs');
   const data = qs.stringify({
-    'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
+'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
     'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
     'phone_model': '23108RN04Y',
     'requests[0]': 'account',
@@ -2563,8 +2563,8 @@ async function checkQRISStatus() {
     'requests[qris_history][ke_tanggal]': '',
     'phone_android_version': '15',
     'app_version_code': '250327',
-    'auth_username': 'arivpnstore',
-    'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
+    'auth_username': 'ISI AUTH USERNAME ORDER KUOTA',
+    'auth_token': 'ISI AUTH TOKEN DARI APK ORDER KUOTA',
     'app_version_name': '25.03.27',
     'ui_mode': 'dark'
   });;
