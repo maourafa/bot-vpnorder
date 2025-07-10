@@ -61,7 +61,7 @@ const bot = new Telegraf(BOT_TOKEN);
 const adminIds = ADMIN;
 logger.info('Bot initialized');
 
-const db = new sqlite3.Database('./botvpn.db', (err) => {
+const db = new sqlite3.Database('./sellvpn.db', (err) => {
   if (err) {
     logger.error('Kesalahan koneksi SQLite3:', err.message);
   } else {
@@ -2465,42 +2465,31 @@ async function processDeposit(ctx, amount) {
     global.pendingDeposits = {};
   }
 
- try {
-  const bayar = await axios.get(`https://api.serverpremium.web.id/orderkuota/createpayment?apikey=AriApiPaymetGetwayMod&amount=${finalAmount}&codeqr=${DATA_QRIS}`);
-  const get = bayar.data;
-
-  const imageUrl = get.result.imageqris.url;
-  const qrImage = await axios.get(imageUrl, { responseType: 'arraybuffer' });
-  const qrBuffer = Buffer.from(qrImage.data);
-
-  const caption =
-    `📝 *Detail Pembayaran:*\n\n` +
-    `💰 Jumlah: Rp ${finalAmount}\n` +
-    `- Nominal Top Up: Rp ${amount}\n` +
-    `- Admin Fee : Rp ${adminFee}\n` +
-    `⚠️ *Penting:* Mohon transfer sesuai nominal\n` +
-    `⏱️ Waktu: 5 menit\n\n` +
-    `⚠️ *Catatan:*\n` +
-    `- Pembayaran akan otomatis terverifikasi\n` +
-    `- Jangan tutup halaman ini\n` +
-    `- Jika pembayaran berhasil, saldo akan otomatis ditambahkan`;
-
-  const qrMessage = await ctx.replyWithPhoto({ source: qrBuffer }, {
-    caption: caption,
-    parse_mode: 'Markdown'
-  });
-
-  // Hapus pesan input nominal setelah QR code dikirim
   try {
-    await ctx.deleteMessage();
-  } catch (e) {
-    console.error('Gagal menghapus pesan input nominal:', e.message);
-  }
+    const { qrBuffer } = await qris.generateQR(finalAmount);
 
-} catch (err) {
-  console.error('Gagal membuat pembayaran QR:', err.message);
-  await ctx.reply('❌ Gagal membuat pembayaran. Silakan coba lagi.');
-}
+    const caption =
+      `📝 *Detail Pembayaran:*\n\n` +
+                  `💰 Jumlah: Rp ${finalAmount}\n` +
+      `- Nominal Top Up: Rp ${amount}\n` +
+      `- Admin Fee : Rp ${adminFee}\n` +
+                  `⚠️ *Penting:* Mohon transfer sesuai nominal\n` +
+      `⏱️ Waktu: 5 menit\n\n` +
+                  `⚠️ *Catatan:*\n` +
+                  `- Pembayaran akan otomatis terverifikasi\n` +
+                  `- Jangan tutup halaman ini\n` +
+      `- Jika pembayaran berhasil, saldo akan otomatis ditambahkan`;
+
+    const qrMessage = await ctx.replyWithPhoto({ source: qrBuffer }, {
+      caption: caption,
+          parse_mode: 'Markdown'
+        });
+    // Hapus pesan input nominal setelah QR code dikirim
+    try {
+      await ctx.deleteMessage();
+    } catch (e) {
+      logger.error('Gagal menghapus pesan input nominal:', e.message);
+    }
 
         global.pendingDeposits[uniqueCode] = {
           amount: finalAmount,
@@ -2563,9 +2552,9 @@ async function checkQRISStatus() {
       try {
        const qs = require('qs');
   const data = qs.stringify({
-    'app_reg_id': '-----',
-    'phone_uuid': '-',
-    'phone_model': '-',
+    'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
+    'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
+    'phone_model': '23108RN04Y',
     'requests[0]': 'account',
     'requests[qris_history][page]': '1',
     'requests[qris_history][jumlah]': '',
@@ -2574,8 +2563,8 @@ async function checkQRISStatus() {
     'requests[qris_history][ke_tanggal]': '',
     'phone_android_version': '15',
     'app_version_code': '250327',
-    'auth_username': '',
-    'auth_token': '-',
+    'auth_username': 'arivpnstore',
+    'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
     'app_version_name': '25.03.27',
     'ui_mode': 'dark'
   });;
