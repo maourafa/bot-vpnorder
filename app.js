@@ -2563,8 +2563,8 @@ async function checkQRISStatus() {
     'requests[qris_history][ke_tanggal]': '',
     'phone_android_version': '15',
     'app_version_code': '250327',
-    'auth_username': 'ISI AUTH USERNAME ORDER KUOTA',
-    'auth_token': 'ISI AUTH TOKEN DARI APK ORDER KUOTA',
+    'auth_username': 'arivpnstore',
+    'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
     'app_version_name': '25.03.27',
     'ui_mode': 'dark'
   });;
