@@ -159,8 +159,6 @@ sudo systemctl start $SERVICE_NAME
 
 # Tampilkan status
 sudo systemctl status $SERVICE_NAME --no-pager
-
-    printf "\033[5A\033[0J"
     echo -e "       Status Server is "$(cek_status)""
     echo -e "${orange}─────────────────────────────────────────${neutral}"
     echo -e "${green}Bot has been installed and running.${neutral}"
