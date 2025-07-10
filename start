@@ -100,12 +100,12 @@ server_app() {
             echo -e "${red}DATA QRIS tidak boleh kosong. Silakan coba lagi.${neutral}"
         fi
     done
-    while [ -z "$merchantid" ]; do
-        read -p "Masukkan MERCHANT ID: " merchantid
-        if [ -z "$merchantid" ]; then
-            echo -e "${red}MERCHANT ID tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
+   # while [ -z "$merchantid" ]; do
+   #     read -p "Masukkan MERCHANT ID: " merchantid
+   #     if [ -z "$merchantid" ]; then
+   #         echo -e "${red}MERCHANT ID tidak boleh kosong. Silakan coba lagi.${neutral}"
+   #    fi
+   # done
    # while [ -z "$apikey" ]; do
    #     read -p "Masukkan API KEY: " apikey
    #     if [ -z "$apikey" ]; then
@@ -118,8 +118,9 @@ server_app() {
    #         echo -e "${red}GROUP ID tidak boleh kosong. Silakan coba lagi.${neutral}"
    #     fi
    # done
-apikey=1234567890     #ga penting
-groupid=1234567890    #ga penting
+merchantid=           #ga penting
+apikey=               #ga penting
+groupid=              #ga penting
     rm -f /root/BotVPN/.vars.json
     echo "{
   \"BOT_TOKEN\": \"$token\",
