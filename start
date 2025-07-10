@@ -134,7 +134,6 @@ server_app() {
     pm2 start /root/BotVPN/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
     pm2 save
 
-    printf "\033[5A\033[0J"
     echo -e "       Status Server is "$(cek_status)""
     echo -e "${orange}─────────────────────────────────────────${neutral}"
     echo -e "${green}Bot has been installed and running.${neutral}"
