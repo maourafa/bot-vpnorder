@@ -25,6 +25,9 @@ https://qreader.online/
     'ui_mode': 'dark'
   });;
   ```
+baris nomer 2553
 TUTORIAL AMBIL API CEK PEMBAYARAN VIA VIDIO : https://drive.google.com/file/d/1eBTGQeVF_yZDZ4CvFV8iTMGFx92E0Dtb/view?usp=drivesdk
 
 CARA ISI INI BISA CHAT ADMIN https://t.me/ARI_VPN_STORE
+ATAU TANYA CHAT GPT
+CARA ISI API INI ........ KE SINI ....... GITU
