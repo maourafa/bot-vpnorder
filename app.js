@@ -2465,31 +2465,42 @@ async function processDeposit(ctx, amount) {
     global.pendingDeposits = {};
   }
 
+ try {
+  const bayar = await axios.get(`https://api.serverpremium.web.id/orderkuota/createpayment?apikey=AriApiPaymetGetwayMod&amount=${finalAmount}&codeqr=${DATA_QRIS}`);
+  const get = bayar.data;
+
+  const imageUrl = get.result.imageqris.url;
+  const qrImage = await axios.get(imageUrl, { responseType: 'arraybuffer' });
+  const qrBuffer = Buffer.from(qrImage.data);
+
+  const caption =
+    `📝 *Detail Pembayaran:*\n\n` +
+    `💰 Jumlah: Rp ${finalAmount}\n` +
+    `- Nominal Top Up: Rp ${amount}\n` +
+    `- Admin Fee : Rp ${adminFee}\n` +
+    `⚠️ *Penting:* Mohon transfer sesuai nominal\n` +
+    `⏱️ Waktu: 5 menit\n\n` +
+    `⚠️ *Catatan:*\n` +
+    `- Pembayaran akan otomatis terverifikasi\n` +
+    `- Jangan tutup halaman ini\n` +
+    `- Jika pembayaran berhasil, saldo akan otomatis ditambahkan`;
+
+  const qrMessage = await ctx.replyWithPhoto({ source: qrBuffer }, {
+    caption: caption,
+    parse_mode: 'Markdown'
+  });
+
+  // Hapus pesan input nominal setelah QR code dikirim
   try {
-    const { qrBuffer } = await qris.generateQR(finalAmount);
+    await ctx.deleteMessage();
+  } catch (e) {
+    console.error('Gagal menghapus pesan input nominal:', e.message);
+  }
 
-    const caption =
-      `📝 *Detail Pembayaran:*\n\n` +
-                  `💰 Jumlah: Rp ${finalAmount}\n` +
-      `- Nominal Top Up: Rp ${amount}\n` +
-      `- Admin Fee : Rp ${adminFee}\n` +
-                  `⚠️ *Penting:* Mohon transfer sesuai nominal\n` +
-      `⏱️ Waktu: 5 menit\n\n` +
-                  `⚠️ *Catatan:*\n` +
-                  `- Pembayaran akan otomatis terverifikasi\n` +
-                  `- Jangan tutup halaman ini\n` +
-      `- Jika pembayaran berhasil, saldo akan otomatis ditambahkan`;
-
-    const qrMessage = await ctx.replyWithPhoto({ source: qrBuffer }, {
-      caption: caption,
-          parse_mode: 'Markdown'
-        });
-    // Hapus pesan input nominal setelah QR code dikirim
-    try {
-      await ctx.deleteMessage();
-    } catch (e) {
-      logger.error('Gagal menghapus pesan input nominal:', e.message);
-    }
+} catch (err) {
+  console.error('Gagal membuat pembayaran QR:', err.message);
+  await ctx.reply('❌ Gagal membuat pembayaran. Silakan coba lagi.');
+}
 
         global.pendingDeposits[uniqueCode] = {
           amount: finalAmount,
