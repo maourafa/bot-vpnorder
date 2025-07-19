@@ -2409,17 +2409,22 @@ db.all('SELECT * FROM pending_deposits WHERE status = "pending"', [], (err, rows
   });
   logger.info('Pending deposit loaded:', Object.keys(global.pendingDeposits).length);
 });
+
 /*
-const qris = new QRISPayment({
+    const qris = new QRISPayment({
     merchantId: MERCHANT_ID,
     apiKey: API_KEY,
     baseQrString: DATA_QRIS,
     logoPath: 'logo.png'
 });
 */
+function generateRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 async function processDeposit(ctx, amount) {
   const currentTime = Date.now();
-  
+
   if (currentTime - lastRequestTime < requestInterval) {
     await ctx.editMessageText('⚠️ *Terlalu banyak permintaan. Silakan tunggu sebentar sebelum mencoba lagi.*', { parse_mode: 'Markdown' });
     return;
@@ -2428,45 +2433,32 @@ async function processDeposit(ctx, amount) {
   lastRequestTime = currentTime;
   const userId = ctx.from.id;
   const uniqueCode = `user-${userId}-${Date.now()}`;
-  
-  // Generate random amount and check if it exists
-  let finalAmount;
-  let attempts = 0;
-  const maxAttempts = 10; // Maksimal 10 kali percobaan
 
-  do {
-    finalAmount = generateRandomAmount(parseInt(amount));
-    attempts++;
-
-    // Check if amount exists in pending deposits
-    const exists = await new Promise((resolve) => {
-      db.get('SELECT 1 FROM pending_deposits WHERE amount = ? AND status = "pending"', [finalAmount], (err, row) => {
-        if (err) {
-          logger.error('Error checking existing amount:', err);
-          resolve(false);
-        } else {
-          resolve(!!row);
-        }
-      });
-    });
-
-    if (!exists) break;
-
-    if (attempts >= maxAttempts) {
-      await ctx.editMessageText('⚠️ *Terlalu banyak percobaan. Silakan coba lagi nanti.*', { parse_mode: 'Markdown' });
-      return;
-    }
-  } while (true);
-
-  // Calculate admin fee
-  const adminFee = finalAmount - parseInt(amount);
-
-  if (!global.pendingDeposits) {
-    global.pendingDeposits = {};
-  }
-
+  // Generate final amount with random suffix
+  const finalAmount = Number(amount) + generateRandomNumber(1, 300);
+  const adminFee = finalAmount - Number(amount)
   try {
-    const { qrBuffer } = await qris.generateQR(finalAmount);
+    const urlQr = DATA_QRIS; // QR destination
+   // console.log('🔍 CEK DATA_QRIS:', urlQr);
+    const axios = require('axios');
+//const sharp = require('sharp'); // opsional kalau mau resize
+
+const bayar = await axios.get(`https://api.serverpremium.web.id/orderkuota/createpayment?apikey=AriApiPaymetGetwayMod&amount=${finalAmount}&codeqr=${urlQr}`);
+const get = bayar.data;
+
+if (get.status !== 'success') {
+  throw new Error('Gagal membuat QRIS: ' + JSON.stringify(get));
+}
+
+const qrImageUrl = get.result.imageqris?.url;
+
+if (!qrImageUrl || qrImageUrl.includes('undefined')) {
+  throw new Error('URL QRIS tidak valid: ' + qrImageUrl);
+}
+
+// Download gambar QR
+const qrResponse = await axios.get(qrImageUrl, { responseType: 'arraybuffer' });
+const qrBuffer = Buffer.from(qrResponse.data);
 
     const caption =
       `📝 *Detail Pembayaran:*\n\n` +
@@ -2477,13 +2469,12 @@ async function processDeposit(ctx, amount) {
       `⏱️ Waktu: 5 menit\n\n` +
                   `⚠️ *Catatan:*\n` +
                   `- Pembayaran akan otomatis terverifikasi\n` +
-                  `- Jangan tutup halaman ini\n` +
       `- Jika pembayaran berhasil, saldo akan otomatis ditambahkan`;
 
     const qrMessage = await ctx.replyWithPhoto({ source: qrBuffer }, {
       caption: caption,
           parse_mode: 'Markdown'
-        });
+        }); 
     // Hapus pesan input nominal setelah QR code dikirim
     try {
       await ctx.deleteMessage();
@@ -2552,21 +2543,21 @@ async function checkQRISStatus() {
       try {
        const qs = require('qs');
   const data = qs.stringify({
-    'app_reg_id': ':-----',
-    'phone_uuid': '-',
-    'phone_model': '-',
+    'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
+    'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
+    'phone_model': '23108RN04Y',
     'requests[0]': 'account',
     'requests[qris_history][page]': '1',
     'requests[qris_history][jumlah]': '',
     'requests[qris_history][keterangan]': '',
     'requests[qris_history][dari_tanggal]': '',
     'requests[qris_history][ke_tanggal]': '',
-    'phone_android_version': '-',
-    'app_version_code': '-',
-    'auth_username': 'ISI AUTH USERNAME ORDER KUOTA',
-    'auth_token': 'ISI AUTH TOKEN DARI APK ORDER KUOTA',
-    'app_version_name': '25.03.27',
-    'ui_mode': 'dark'
+    'phone_android_version': '15',
+    'app_version_code': '250711',
+    'auth_username': 'arivpnstore',
+    'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
+    'app_version_name': '25.07.11',
+    'ui_mode': 'light'
   });;
 
         const resultcek = await axios.post('https://app.orderkuota.com/api/v2/get', data, {
