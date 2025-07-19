@@ -287,7 +287,7 @@ Saldo: <code>Rp ${saldo}</code>
 
 👨‍💻 <b>Pembuat:</b> @ARI_VPN_STORE
 🛠️ <b>Credit:</b> ARI STORE × API POTATO  
-🔧 <b>Base:</b> FT TUNNEL
+🔧 <b>Base:</b> FighterTunnel
 👥 Pengguna BOT: ${jumlahPengguna}
 ⏱️ Latency: ${latency} ms
 ──────────────────────────`;
