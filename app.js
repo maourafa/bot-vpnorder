@@ -4,7 +4,7 @@ const express = require('express');
 const { Telegraf } = require('telegraf');
 const app = express();
 const axios = require('axios');
-const QRISPayment = require('qris-payment');
+//const QRISPayment = require('qris-payment');
 const winston = require('winston');
 const logger = winston.createLogger({
   level: 'info',
@@ -2409,14 +2409,14 @@ db.all('SELECT * FROM pending_deposits WHERE status = "pending"', [], (err, rows
   });
   logger.info('Pending deposit loaded:', Object.keys(global.pendingDeposits).length);
 });
-
+/*
 const qris = new QRISPayment({
     merchantId: MERCHANT_ID,
     apiKey: API_KEY,
     baseQrString: DATA_QRIS,
     logoPath: 'logo.png'
 });
-
+*/
 async function processDeposit(ctx, amount) {
   const currentTime = Date.now();
   
