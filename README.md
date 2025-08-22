@@ -42,10 +42,7 @@ CARA ISI INI BISA CHAT ADMIN https://t.me/ARI_VPN_STORE
 ATAU TANYA CHAT GPT
 CARA ISI API INI .(tempel hasil seniff). KE SINI .(tempel cekpembayaran di atas ini). GITU
 
-## TAMPILAN SC BotVPN POTATO VERSI GRATIS 
-<img src="./ss2.png" alt="image" width="300"/>
-
-## KUSUS SC TERUPDATE
+## TAMPILAN SC BotVPN POTATO 
 <img src="./ss3.png" alt="image" width="300"/>
-kasih admin buat ngopi : https://serverpremium.web.id/payment/
-chat klo udah : https://t.me/ARI_VPN_STORE
+kasih uang jajan : https://serverpremium.web.id/payment/
+Owner : https://t.me/ARI_VPN_STORE
