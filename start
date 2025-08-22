@@ -44,11 +44,12 @@ cek_status() {
 setup_bot() {
     timedatectl set-timezone Asia/Jakarta || echo -e "${red}Failed to set timezone to Jakarta${neutral}"
     
+npm install -g npm@latest
+npm install -g pm2
+
     if ! dpkg -s nodejs >/dev/null 2>&1; then
         curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - || echo -e "${red}Failed to download Node.js setup${neutral}"
         apt-get install -y nodejs || echo -e "${red}Failed to install Node.js${neutral}"
-        npm install -g npm@latest
-        npm install -g pm2
     else
         echo -e "${green}Node.js is already installed, skipping...${neutral}"
     fi
