@@ -41,4 +41,4 @@ ATAU TANYA CHAT GPT
 CARA ISI API INI .(tempel hasil seniff). KE SINI .(tempel cekpembayaran di atas ini). GITU
 
 ## KUSUS SC UPDATE + TAMBAHAN FITUR BISA BELI DI SINI
-t.me/ARI_VPN_STORE
+https://t.me/ARI_VPN_STORE
