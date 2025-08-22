@@ -43,8 +43,8 @@ ATAU TANYA CHAT GPT
 CARA ISI API INI .(tempel hasil seniff). KE SINI .(tempel cekpembayaran di atas ini). GITU
 
 ## TAMPILAN FREE BotVPN POTATO
-<img src="./ss2.png" alt="image" width="500"/>
+<img src="./ss2.png" alt="image" width="300"/>
 
 ## KUSUS SC UPDATE + TAMBAHAN FITUR BISA BELI DI SINI
-<img src="./ss3.png" alt="image" width="500"/>
+<img src="./ss3.png" alt="image" width="300"/>
 CHAT https://t.me/ARI_VPN_STORE
