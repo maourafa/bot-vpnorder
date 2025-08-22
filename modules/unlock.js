@@ -3,8 +3,8 @@ const { exec } = require('child_process');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./sellvpn.db');
 
-async function renewssh(username, exp, limitip, serverId) {
-  console.log(`Renewing SSH account for ${username} with expiry ${exp} days, limit IP ${limitip} on server ${serverId}`);
+async function unlockssh(username, password, exp, iplimit, serverId) {
+  console.log(`Unlock SSH account for ${username} with expiry ${exp} days, IP limit ${iplimit}, and password ${password}`);
 
   // Validasi username
   if (/\s/.test(username) || /[^a-zA-Z0-9]/.test(username)) {
@@ -19,16 +19,13 @@ async function renewssh(username, exp, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/renewsshvpn`;
+      const param = `/vps/unlocksshvpn`;
       const web_URL = `http://${domain}${param}`; // Contoh: http://domainmu.com/vps/sshvpn
       const AUTH_TOKEN = server.auth;
-      const days = exp;
 
-      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}/${days}" \
+      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}/pw" \
 -H "Authorization: ${AUTH_TOKEN}" \
--H "accept: application/json" \
--H "Content-Type: application/json" \
--d '{"kuota": 0}'`;
+-H "accept: application/json"`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -47,14 +44,11 @@ async function renewssh(username, exp, limitip, serverId) {
         }
 
         const s = d.data;
-        const msg = `✅ *Renew SSH Account Success!*
+        const msg = `✅ *Unlock SSH Account Success!*
 
-🔄 *Akun berhasil diperpanjang*
+🔄 *Akun berhasil dihapus*
 ────────────────────────────
 👤 *Username*     : \`${s.username}\`
-📆 *Masa Aktif*   :
-🕒 Dari: \`${s.from}\`
-🕒 Sampai: \`${s.to}\`
 ────────────────────────────
 
 ✨ Terima kasih telah memperpanjang layanan kami!
@@ -65,7 +59,7 @@ async function renewssh(username, exp, limitip, serverId) {
     });
   });
 }
-async function renewvmess(username, exp, quota, limitip, serverId) {
+async function unlockvmess(username, exp, quota, limitip, serverId) {
   console.log(`Renewing VMess account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
 
   // Validasi username
@@ -81,17 +75,13 @@ async function renewvmess(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/renewvmess`;
+      const param = `/vps/unlockvmess`;
       const web_URL = `http://${domain}${param}`; // contoh: http://domain.com/vps/vmess
       const AUTH_TOKEN = server.auth;
-      const days = exp;
-      const KUOTA = quota;
 
-      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}/${days}" \
+      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}" \
 -H "Authorization: ${AUTH_TOKEN}" \
--H "accept: application/json" \
--H "Content-Type: application/json" \
--d '{"kuota": ${KUOTA}}'`;
+-H "accept: application/json"`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -110,15 +100,11 @@ async function renewvmess(username, exp, quota, limitip, serverId) {
         }
 
         const s = d.data;
-        const msg = `✅ *Renew VMess Account Success!*
+        const msg = `✅ *Unlock VMess Account Success!*
 
-🔄 *Akun berhasil diperpanjang*
+🔄 *Akun berhasil dihapus*
 ────────────────────────────
 👤 *Username*    : \`${s.username}\`
-📦 *Quota*       : \`${s.quota === "0" ? "Unlimited" : s.quota} GB\`
-📅 *Masa Aktif*  :
-🕒 Dari   : \`${s.from}\`
-🕒 Sampai : \`${s.to}\`
 ────────────────────────────
 
 ✨ Terima kasih telah memperpanjang layanan kami!
@@ -129,8 +115,8 @@ async function renewvmess(username, exp, quota, limitip, serverId) {
     });
   });
 }
-async function renewvless(username, exp, quota, limitip, serverId) {
-  console.log(`Renewing VLESS account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
+async function unlockvless(username, exp, quota, limitip, serverId) {
+  console.log(`Unlock VLESS account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
 
   // Validasi username
   if (/\s/.test(username) || /[^a-zA-Z0-9]/.test(username)) {
@@ -145,17 +131,13 @@ async function renewvless(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/renewvless`;
+      const param = `/vps/unlockvless`;
       const web_URL = `http://${domain}${param}`;        // Contoh: http://domain.com/vps/vless
       const AUTH_TOKEN = server.auth;
-      const days = exp;
-      const KUOTA = quota;
 
-      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}/${days}" \
+      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}" \
 -H "Authorization: ${AUTH_TOKEN}" \
--H "accept: application/json" \
--H "Content-Type: application/json" \
--d '{"kuota": ${KUOTA}}'`;
+-H "accept: application/json"`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -174,15 +156,11 @@ async function renewvless(username, exp, quota, limitip, serverId) {
         }
 
         const s = d.data;
-        const msg = `✅ *Renew VLESS Account Success!*
+        const msg = `✅ *Unlock VLESS Account Success!*
 
-🔄 *Akun berhasil diperpanjang*
+🔄 *Akun berhasil dihapus*
 ────────────────────────────
 👤 *Username*    : \`${s.username}\`
-📦 *Quota*       : \`${s.quota === "0" ? "Unlimited" : s.quota} GB\`
-📅 *Masa Aktif*  :
-🕒 Dari   : \`${s.from}\`
-🕒 Sampai : \`${s.to}\`
 ────────────────────────────
 
 ✨ Terima kasih telah memperpanjang layanan kami!
@@ -193,7 +171,7 @@ async function renewvless(username, exp, quota, limitip, serverId) {
     });
   });
 }
-async function renewtrojan(username, exp, quota, limitip, serverId) {
+async function unlocktrojan(username, exp, quota, limitip, serverId) {
   console.log(`Renewing TROJAN account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
 
   // Validasi username
@@ -209,17 +187,13 @@ async function renewtrojan(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/renewtrojan`;
+      const param = `/vps/unlocktrojan`;
       const web_URL = `http://${domain}${param}`;         // Contoh: http://domain.com/vps/trojan
       const AUTH_TOKEN = server.auth;
-      const days = exp;
-      const KUOTA = quota;
 
-      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}/${days}" \
+      const curlCommand = `curl -s -X PATCH "${web_URL}/${username}" \
 -H "Authorization: ${AUTH_TOKEN}" \
--H "accept: application/json" \
--H "Content-Type: application/json" \
--d '{"kuota": ${KUOTA}}'`;
+-H "accept: application/json"`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -238,15 +212,11 @@ async function renewtrojan(username, exp, quota, limitip, serverId) {
         }
 
         const s = d.data;
-        const msg = `✅ *Renew TROJAN Account Success!*
+        const msg = `✅ *Unlock TROJAN Account Success!*
 
-🔄 *Akun berhasil diperpanjang*
+🔄 *Akun berhasil dihapus*
 ────────────────────────────
 👤 *Username*    : \`${s.username}\`
-📦 *Quota*       : \`${s.quota === "0" ? "Unlimited" : s.quota} GB\`
-📅 *Masa Aktif*  :
-🕒 Dari   : \`${s.from}\`
-🕒 Sampai : \`${s.to}\`
 ────────────────────────────
 
 ✨ Terima kasih telah memperpanjang layanan kami!
@@ -258,7 +228,7 @@ async function renewtrojan(username, exp, quota, limitip, serverId) {
   });
 }
 //create shadowsocks ga ada di potato
-  async function renewshadowsocks(username, exp, quota, limitip, serverId) {
+  async function unlockshadowsocks(username, exp, quota, limitip, serverId) {
     console.log(`Renewing Shadowsocks account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip} on server ${serverId}`);
     
     // Validasi username
@@ -313,4 +283,4 @@ async function renewtrojan(username, exp, quota, limitip, serverId) {
     });
   }
   
-  module.exports = { renewshadowsocks, renewtrojan, renewvless, renewvmess, renewssh };
+  module.exports = { unlockshadowsocks, unlocktrojan, unlockvless, unlockvmess, unlockssh };

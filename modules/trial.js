@@ -2,7 +2,7 @@ const axios = require('axios');
 const { exec } = require('child_process');
 const sqlite3 = require('sqlite3').verbose();
 const db = new sqlite3.Database('./sellvpn.db');
-async function createssh(username, password, exp, iplimit, serverId) {
+async function trialssh(username, password, exp, iplimit, serverId) {
   console.log(`Creating SSH account for ${username} with expiry ${exp} days, IP limit ${iplimit}, and password ${password}`);
 
   // Validasi username
@@ -18,18 +18,18 @@ async function createssh(username, password, exp, iplimit, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/sshvpn`;
+      const param = `/vps/trialsshvpn`;
       const web_URL = `http://${domain}${param}`; // misalnya: http://idnusastb.domain.web.id/vps/sshvpn
       const AUTH_TOKEN = server.auth;
       const days = exp;
       const KUOTA = "0"; // jika perlu di-hardcode, bisa diubah jadi parameter juga
       const LIMIT_IP = iplimit;
 
-      const curlCommand = `curl -s -X POST "${web_URL}" \
+  const curlCommand = `curl -s -X POST "${web_URL}" \
 -H "Authorization: ${AUTH_TOKEN}" \
 -H "Content-Type: application/json" \
 -H "Accept: application/json" \
--d '{"expired":${days},"kuota":"${KUOTA}","limitip":"${LIMIT_IP}","password":"${password}","username":"${username}"}'`;
+-d '{"timelimit":"3h"}'`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -103,7 +103,7 @@ Upgrade: websocket
     });
   });
 }
-async function createvmess(username, exp, quota, limitip, serverId) {
+async function trialvmess(username, exp, quota, limitip, serverId) {
   console.log(`Creating VMess account for ${username} with expiry ${exp} days, quota ${quota} GB, IP limit ${limitip}`);
 
   // Validasi username
@@ -119,18 +119,18 @@ async function createvmess(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/vmessall`;
+      const param = `/vps/trialvmessall`;
       const web_URL = `http://${domain}${param}`; // contoh: http://idnusastb.domain.web.id/vps/vmess
       const AUTH_TOKEN = server.auth;
       const days = exp;
       const KUOTA = quota;
       const LIMIT_IP = limitip;
 
-      const curlCommand = `curl -s -X POST "${web_URL}" \
+  const curlCommand = `curl -s -X POST "${web_URL}" \
 -H "Authorization: ${AUTH_TOKEN}" \
 -H "Content-Type: application/json" \
 -H "Accept: application/json" \
--d '{"expired":${days},"kuota":"${KUOTA}","limitip":"${LIMIT_IP}","username":"${username}"}'`;
+-d '{"timelimit":"3h"}'`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -197,7 +197,7 @@ async function createvmess(username, exp, quota, limitip, serverId) {
   });
 }
 
-async function createvless(username, exp, quota, limitip, serverId) {
+async function trialvless(username, exp, quota, limitip, serverId) {
   console.log(`Creating VLESS account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
 
   // Validasi username
@@ -213,18 +213,18 @@ async function createvless(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/vlessall`;
+      const param = `/vps/trialvlessall`;
       const web_URL = `http://${domain}${param}`; // Contoh: http://domainmu.com/vps/vless
       const AUTH_TOKEN = server.auth;
       const days = exp;
       const KUOTA = quota;
       const LIMIT_IP = limitip;
 
-      const curlCommand = `curl -s -X POST "${web_URL}" \
+  const curlCommand = `curl -s -X POST "${web_URL}" \
 -H "Authorization: ${AUTH_TOKEN}" \
 -H "Content-Type: application/json" \
 -H "Accept: application/json" \
--d '{"expired":${days},"kuota":"${KUOTA}","limitip":"${LIMIT_IP}","username":"${username}"}'`;
+-d '{"timelimit":"3h"}'`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -289,7 +289,7 @@ async function createvless(username, exp, quota, limitip, serverId) {
     });
   });
 }
-async function createtrojan(username, exp, quota, limitip, serverId) {
+async function trialtrojan(username, exp, quota, limitip, serverId) {
   console.log(`Creating Trojan account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip}`);
 
   // Validasi username
@@ -305,18 +305,18 @@ async function createtrojan(username, exp, quota, limitip, serverId) {
       }
 
       const domain = server.domain;
-      const param = `/vps/trojanall`;
+      const param = `/vps/trialtrojanall`;
       const web_URL = `http://${domain}${param}`; // contoh: http://domainmu.com/vps/trojan
       const AUTH_TOKEN = server.auth;
       const days = exp;
       const KUOTA = quota;
       const LIMIT_IP = limitip;
 
-      const curlCommand = `curl -s -X POST "${web_URL}" \
+  const curlCommand = `curl -s -X POST "${web_URL}" \
 -H "Authorization: ${AUTH_TOKEN}" \
 -H "Content-Type: application/json" \
 -H "Accept: application/json" \
--d '{"expired":${days},"kuota":"${KUOTA}","limitip":"${LIMIT_IP}","username":"${username}"}'`;
+-d '{"timelimit":"3h"}'`;
 
       exec(curlCommand, (_, stdout) => {
         let d;
@@ -380,7 +380,7 @@ async function createtrojan(username, exp, quota, limitip, serverId) {
 
 
 //create shadowsocks ga ada di potato
-async function createshadowsocks(username, exp, quota, limitip, serverId) {
+async function trialshadowsocks(username, exp, quota, limitip, serverId) {
   console.log(`Creating Shadowsocks account for ${username} with expiry ${exp} days, quota ${quota} GB, limit IP ${limitip} on server ${serverId}`);
   
   // Validasi username
@@ -457,7 +457,7 @@ Save Account Link: [Save Account](https://${shadowsocksData.domain}:81/shadowsoc
   });
 }
 
-module.exports = { createssh, createvmess, createvless, createtrojan, createshadowsocks }; 
+module.exports = { trialssh, trialvmess, trialvless, trialtrojan, trialshadowsocks }; 
 
 
 
