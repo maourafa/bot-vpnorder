@@ -45,6 +45,7 @@ CARA ISI API INI .(tempel hasil seniff). KE SINI .(tempel cekpembayaran di atas 
 ## TAMPILAN SC BotVPN POTATO VERSI GRATIS 
 <img src="./ss2.png" alt="image" width="300"/>
 
-## KUSUS SC TERUPDATE + TAMBAHAN FITUR BISA BELI DI SINI
+## KUSUS SC TERUPDATE
 <img src="./ss3.png" alt="image" width="300"/>
-CHAT https://t.me/ARI_VPN_STORE
+kasih admin buat ngopi : https://serverpremium.web.id/payment/
+chat klo udah : https://t.me/ARI_VPN_STORE
