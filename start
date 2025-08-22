@@ -102,24 +102,9 @@ server_app() {
             echo -e "${red}DATA QRIS tidak boleh kosong. Silakan coba lagi.${neutral}"
         fi
     done
-    while [ -z "$merchantid" ]; do
-        read -p "Masukkan MERCHANT ID: " merchantid
-        if [ -z "$merchantid" ]; then
-            echo -e "${red}MERCHANT ID tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
-    while [ -z "$apikey" ]; do
-        read -p "Masukkan API KEY: " apikey
-        if [ -z "$apikey" ]; then
-            echo -e "${red}API KEY tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
-    while [ -z "$groupid" ]; do
-        read -p "Masukkan GROUP ID (ID grup Telegram, contoh: -1001234567890): " groupid
-        if [ -z "$groupid" ]; then
-            echo -e "${red}GROUP ID tidak boleh kosong. Silakan coba lagi.${neutral}"
-        fi
-    done
+merchantid="NONE"
+apikey="NONE"
+groupid="NONE"
     rm -f /root/BotVPN/.vars.json
     echo "{
   \"BOT_TOKEN\": \"$token\",
@@ -132,7 +117,7 @@ server_app() {
   \"API_KEY\": \"$apikey\"
 }" >/root/BotVPN/.vars.json
 
-    pm2 start /root/BotVPN/app.js --name sellvpn --env production -- --token "$token" --adminid "$adminid" --namastore "$namastore" --dataqris "$dataqris" --merchantid "$merchantid" --apikey "$apikey"
+    pm2 start /root/BotVPN/app.js --name sellvpn
     pm2 save
 
     echo -e "       Status Server is "$(cek_status)""
