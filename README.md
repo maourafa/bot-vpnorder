@@ -7,23 +7,31 @@ sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.di
 https://qreader.online/
 
 ## CEK PEMBAYARAN 
-```const data = qs.stringify({
-    'app_reg_id': ':-----',
-    'phone_uuid': '-',
-    'phone_model': '-',
-    'requests[0]': 'account',
-    'requests[qris_history][page]': '1',
-    'requests[qris_history][jumlah]': '',
-    'requests[qris_history][keterangan]': '',
-    'requests[qris_history][dari_tanggal]': '',
-    'requests[qris_history][ke_tanggal]': '',
-    'phone_android_version': '-',
-    'app_version_code': '-',
-    'auth_username': 'ISI AUTH USERNAME ORDER KUOTA',
-    'auth_token': 'ISI AUTH TOKEN DARI APK ORDER KUOTA',
-    'app_version_name': '25.03.27',
-    'ui_mode': 'dark'
-  });;
+```bash
+const qs = require('qs');
+const data = qs.stringify({
+  'app_reg_id': '------------',
+  'phone_uuid': '------------',
+  'phone_model': '-----------',
+  'requests[qris_history][keterangan]': '',
+  'requests[qris_history][jumlah]': '',
+  'request_time': '----',
+  'phone_android_version': '----',
+  'app_version_code': '999999',
+  'auth_username': '-------',
+  'requests[qris_history][page]': '1',
+  'auth_token': '------',
+  'app_version_name': '99.99.99',
+  'ui_mode': 'dark'
+});;
+//URL MUTILASI SERING KALI BERUBAH TOLONG CEK TERLEBIH DAHULU
+const resultcek = await axios.post('https://app.orderkuota.com/api/v2/qris/mutasi/1xxxx', data, {
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded',
+'Accept-Encoding': 'gzip',
+'User-Agent': 'okhttp/4.12.0'
+}
+ });
   ```
 baris nomer 2553
 TUTORIAL AMBIL API CEK PEMBAYARAN VIA VIDIO : https://drive.google.com/file/d/1eBTGQeVF_yZDZ4CvFV8iTMGFx92E0Dtb/view?usp=drivesdk
