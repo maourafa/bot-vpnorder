@@ -3200,30 +3200,30 @@ async function checkQRISStatus() {
       }
 
       try {
-       const qs = require('qs');
-       const data = qs.stringify({
-  'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
-  'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
-  'phone_model': '23108RN04Y',
+const qs = require('qs');
+const data = qs.stringify({
+  'app_reg_id': '------------',
+  'phone_uuid': '------------',
+  'phone_model': '-----------',
   'requests[qris_history][keterangan]': '',
   'requests[qris_history][jumlah]': '',
-  'request_time': '1755775293973',
-  'phone_android_version': '15',
+  'request_time': '----',
+  'phone_android_version': '----',
   'app_version_code': '999999',
-  'auth_username': 'arivpnstore',
+  'auth_username': '-------',
   'requests[qris_history][page]': '1',
-  'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
+  'auth_token': '------',
   'app_version_name': '99.99.99',
   'ui_mode': 'dark'
 });;
-
-        const resultcek = await axios.post('https://app.orderkuota.com/api/v2/qris/mutasi/1540779', data, {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-            'Accept-Encoding': 'gzip',
-            'User-Agent': 'okhttp/4.12.0'
-          }
-        });
+//URL MUTILASI SERING KALI BERUBAH TOLONG CEK TERLEBIH DAHULU
+const resultcek = await axios.post('https://app.orderkuota.com/api/v2/qris/mutasi/1xxxx', data, {
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded',
+'Accept-Encoding': 'gzip',
+'User-Agent': 'okhttp/4.12.0'
+}
+ });
 
         // ✅ Tambahkan log respons penuh biar bisa debug
        //console.log("Full API Response:", resultcek);
