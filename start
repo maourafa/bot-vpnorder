@@ -139,8 +139,6 @@ echo '#!/bin/bash' >/usr/bin/sellvpn
 echo "cd /root/BotVPN" >>/usr/bin/sellvpn
 echo "node app.js" >>/usr/bin/sellvpn
 
-chmod +x /usr/bin/sellvpn
-
     systemctl daemon-reload >/dev/null 2>&1
     systemctl enable sellvpn.service >/dev/null 2>&1
     systemctl start sellvpn.service >/dev/null 2>&1
