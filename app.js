@@ -1712,9 +1712,9 @@ fs.readFile(resselDbPath, 'utf8', async (err, data) => {
     if (isNaN(exp) || exp <= 0) {
       return ctx.reply('❌ *Masa aktif tidak valid. Masukkan angka yang valid.*', { parse_mode: 'Markdown' });
     }
-    if (exp < 15) {
+    /*if (exp < 15) {
      return ctx.reply('❌ *Masa aktif minimal 15 hari.*', { parse_mode: 'Markdown' });
-    }
+    }*/
     if (exp > 365) {
       return ctx.reply('❌ *Masa aktif tidak boleh lebih dari 365 hari.*', { parse_mode: 'Markdown' });
     }
