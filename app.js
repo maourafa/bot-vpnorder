@@ -37,6 +37,14 @@ const {
 } = require('./modules/create');
 
 const { 
+  trialssh, 
+  trialvmess, 
+  trialvless, 
+  trialtrojan, 
+  trialshadowsocks 
+} = require('./modules/trial');
+
+const { 
   renewssh, 
   renewvmess, 
   renewvless, 
@@ -44,14 +52,71 @@ const {
   renewshadowsocks 
 } = require('./modules/renew');
 
-const fs = require('fs');
+const { 
+  delssh, 
+  delvmess, 
+  delvless, 
+  deltrojan, 
+  delshadowsocks 
+} = require('./modules/del');
+
+const { 
+  lockssh, 
+  lockvmess, 
+  lockvless, 
+  locktrojan, 
+  lockshadowsocks 
+} = require('./modules/lock');
+
+const { 
+  unlockssh, 
+  unlockvmess, 
+  unlockvless, 
+  unlocktrojan, 
+  unlockshadowsocks 
+} = require('./modules/unlock');
+
+const fsPromises = require('fs/promises');
 const path = require('path');
+const trialFile = path.join(__dirname, 'trial.db');
+
+// Mengecek apakah user sudah pakai trial hari ini
+async function checkTrialAccess(userId) {
+  try {
+    const data = await fsPromises.readFile(trialFile, 'utf8');
+    const trialData = JSON.parse(data);
+    const lastAccess = trialData[userId];
+
+    const today = new Date().toISOString().slice(0, 10); // format YYYY-MM-DD
+    return lastAccess === today;
+  } catch (err) {
+    return false; // anggap belum pernah pakai kalau file belum ada
+  }
+}
+
+// Menyimpan bahwa user sudah pakai trial hari ini
+async function saveTrialAccess(userId) {
+  let trialData = {};
+  try {
+    const data = await fsPromises.readFile(trialFile, 'utf8');
+    trialData = JSON.parse(data);
+  } catch (err) {
+    // file belum ada, lanjut
+  }
+
+  const today = new Date().toISOString().slice(0, 10);
+  trialData[userId] = today;
+  await fsPromises.writeFile(trialFile, JSON.stringify(trialData, null, 2));
+}
+
+
+const fs = require('fs');
 const vars = JSON.parse(fs.readFileSync('./.vars.json', 'utf8'));
 
 const BOT_TOKEN = vars.BOT_TOKEN;
 const port = vars.PORT || 6969;
 const ADMIN = vars.USER_ID; 
-const NAMA_STORE = vars.NAMA_STORE || '@FTVPNSTORES';
+const NAMA_STORE = vars.NAMA_STORE || '@ARI_VPN_STORE';
 const DATA_QRIS = vars.DATA_QRIS;
 const MERCHANT_ID = vars.MERCHANT_ID;
 const API_KEY = vars.API_KEY;
@@ -253,6 +318,12 @@ async function sendMainMenu(ctx) {
 
   // Jumlah pengguna bot
   let jumlahPengguna = 0;
+  let isReseller = false;
+if (fs.existsSync(resselFilePath)) {
+  const resellerList = fs.readFileSync(resselFilePath, 'utf8').split('\n').map(x => x.trim());
+  isReseller = resellerList.includes(userId.toString());
+}
+const statusReseller = isReseller ? 'Reseller' : 'Bukan Reseller';
   try {
     const row = await new Promise((resolve, reject) => {
       db.get('SELECT COUNT(*) AS count FROM users', (err, row) => { if (err) reject(err); else resolve(row); });
@@ -272,9 +343,9 @@ async function sendMainMenu(ctx) {
 <b>Hai, Member <code>${userName}</code>!</b>
 ID: <code>${userId}</code>
 Saldo: <code>Rp ${saldo}</code>
+Status: <code>${statusReseller}</code>
 
-<blockquote>
-📊 <b>Statistik Anda</b>
+<blockquote> 📊 <b>Statistik Anda</b>
 • Hari Ini: ${userToday} akun
 • Minggu Ini: ${userWeek} akun
 • Bulan Ini: ${userMonth} akun
@@ -286,7 +357,7 @@ Saldo: <code>Rp ${saldo}</code>
 </blockquote>
 
 👨‍💻 <b>Pembuat:</b> @ARI_VPN_STORE
-🛠️ <b>Credit:</b> ARI STORE × API POTATO  
+🛠️ <b>Credit:</b> ARI STORE × API POTATO
 🔧 <b>Base:</b> FighterTunnel
 👥 Pengguna BOT: ${jumlahPengguna}
 ⏱️ Latency: ${latency} ms
@@ -298,6 +369,15 @@ Saldo: <code>Rp ${saldo}</code>
       { text: '♻️ Perpanjang Akun', callback_data: 'service_renew' }
     ],
     [
+      { text: '❌ Hapus Akun', callback_data: 'service_del' },
+      { text: '📶 Cek Server', callback_data: 'cek_service' }
+    ],
+    [
+      { text: '🗝️ Kunci Akun', callback_data: 'service_lock' },
+      { text: '🔐 Buka Kunci Akun', callback_data: 'service_unlock' }
+    ],    
+    [
+      { text: '⌛ Trial Akun', callback_data: 'service_trial' },
       { text: '💰 TopUp Saldo', callback_data: 'topup_saldo' }
     ],
   ];
@@ -358,18 +438,20 @@ bot.command('helpadmin', async (ctx) => {
   const helpMessage = `
 *📋 Daftar Perintah Admin:*
 
-1. /addserver - Menambahkan server baru.
-2. /addsaldo - Menambahkan saldo ke akun pengguna.
-3. /editharga - Mengedit harga layanan.
-4. /editnama - Mengedit nama server.
-5. /editdomain - Mengedit domain server.
-6. /editauth - Mengedit auth server.
-7. /editlimitquota - Mengedit batas quota server.
-8. /editlimitip - Mengedit batas IP server.
+1. /addsaldo - Menambahkan saldo ke akun pengguna.
+2. /addserver - Menambahkan server baru.
+3. /addressel - Menambahkan Ressel baru.
+4. /delressel- Menghapus id Ressel.
+5. /broadcast - Mengirim pesan siaran ke semua pengguna.
+6. /editharga - Mengedit harga layanan.
+7. /editauth - Mengedit auth server.
+8. /editdomain - Mengedit domain server.
 9. /editlimitcreate - Mengedit batas pembuatan akun server.
-10. /edittotalcreate - Mengedit total pembuatan akun server.
-11. /broadcast - Mengirim pesan siaran ke semua pengguna.
-12. /hapuslog - Menghapus log bot.
+10. /editlimitip - Mengedit batas IP server.
+11. /editlimitquota - Mengedit batas quota server.
+12. /editnama - Mengedit nama server.
+13. /edittotalcreate - Mengedit total pembuatan akun server.
+14. /hapuslog - Menghapus log bot.
 
 Gunakan perintah ini dengan format yang benar untuk menghindari kesalahan.
 `;
@@ -457,6 +539,7 @@ bot.command('addsaldo', async (ctx) => {
       });
   });
 });
+
 bot.command('addserver', async (ctx) => {
   const userId = ctx.message.from.id;
   if (!adminIds.includes(userId)) {
@@ -727,11 +810,35 @@ async function handleServiceAction(ctx, action) {
       [{ text: 'Buat Vmess', callback_data: 'create_vmess' }, { text: 'Buat Vless', callback_data: 'create_vless' }],
       [{ text: 'Buat Trojan', callback_data: 'create_trojan' }, /*{ text: 'Buat Shadowsocks', callback_data: 'create_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }]
     ];
+  } else if (action === 'trial') {
+    keyboard = [
+      [{ text: 'Trial Ssh/Ovpn', callback_data: 'trial_ssh' }],      
+      [{ text: 'Trial Vmess', callback_data: 'trial_vmess' }, { text: 'Trial Vless', callback_data: 'trial_vless' }],
+      [{ text: 'Trial Trojan', callback_data: 'trial_trojan' }, /*{ text: 'Trial Shadowsocks', callback_data: 'renew_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }],
+    ];
   } else if (action === 'renew') {
     keyboard = [
       [{ text: 'Perpanjang Ssh/Ovpn', callback_data: 'renew_ssh' }],      
       [{ text: 'Perpanjang Vmess', callback_data: 'renew_vmess' }, { text: 'Perpanjang Vless', callback_data: 'renew_vless' }],
       [{ text: 'Perpanjang Trojan', callback_data: 'renew_trojan' }, /*{ text: 'Perpanjang Shadowsocks', callback_data: 'renew_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }],
+    ];
+  } else if (action === 'del') {
+    keyboard = [
+      [{ text: 'Hapus Ssh/Ovpn', callback_data: 'del_ssh' }],      
+      [{ text: 'Hapus Vmess', callback_data: 'del_vmess' }, { text: 'Hapus Vless', callback_data: 'del_vless' }],
+      [{ text: 'Hapus Trojan', callback_data: 'del_trojan' }, /*{ text: 'Perpanjang Shadowsocks', callback_data: 'renew_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }],
+    ];
+  } else if (action === 'lock') {
+    keyboard = [
+      [{ text: 'Lock Ssh/Ovpn', callback_data: 'lock_ssh' }],      
+      [{ text: 'Lock Vmess', callback_data: 'lock_vmess' }, { text: 'Lock Vless', callback_data: 'lock_vless' }],
+      [{ text: 'Lock Trojan', callback_data: 'lock_trojan' }, /*{ text: 'Perpanjang Shadowsocks', callback_data: 'renew_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }],
+    ];
+  } else if (action === 'unlock') {
+    keyboard = [
+      [{ text: 'Unlock Ssh/Ovpn', callback_data: 'unlock_ssh' }],      
+      [{ text: 'Unlock Vmess', callback_data: 'unlock_vmess' }, { text: 'Unlock Vless', callback_data: 'unlock_vless' }],
+      [{ text: 'Unlock Trojan', callback_data: 'unlock_trojan' }, /*{ text: 'Perpanjang Shadowsocks', callback_data: 'renew_shadowsocks' }*/{ text: '🔙 Kembali', callback_data: 'send_main_menu' }],
     ];
   } 
   try {
@@ -806,6 +913,92 @@ async function sendAdminMenu(ctx) {
   }
 }
 
+const resselFilePath = path.join(__dirname, 'ressel.db');
+
+bot.command('addressel', async (ctx) => {
+  try {
+    const requesterId = ctx.from.id;
+
+    // Hanya admin yang bisa menjalankan perintah ini
+    if (!adminIds.includes(requesterId)) {
+      return ctx.reply('🚫 Anda tidak memiliki izin untuk melakukan tindakan ini.');
+    }
+
+    // Ambil ID Telegram dari argumen
+    const args = ctx.message.text.split(' ');
+    if (args.length < 2) {
+      return ctx.reply('❌ Format salah. Gunakan perintah:\n/addressel <id_telegram_user>');
+    }
+
+    const targetId = args[1];
+
+    // Baca file ressel.db jika ada, kalau tidak, buat file baru
+    let resellerList = [];
+    if (fs.existsSync(resselFilePath)) {
+      const fileContent = fs.readFileSync(resselFilePath, 'utf8');
+      resellerList = fileContent.split('\n').filter(line => line.trim() !== '');
+    }
+
+    // Cek apakah ID sudah ada
+    if (resellerList.includes(targetId)) {
+      return ctx.reply(`⚠️ User dengan ID ${targetId} sudah menjadi reseller.`);
+    }
+
+    // Tambahkan ID ke file
+    fs.appendFileSync(resselFilePath, `${targetId}\n`);
+    ctx.reply(`✅ User dengan ID ${targetId} berhasil dijadikan reseller.`);
+
+  } catch (e) {
+    logger.error('❌ Error di command /addressel:', e.message);
+    ctx.reply('❌ Terjadi kesalahan saat menjalankan perintah.');
+  }
+});
+
+bot.command('delressel', async (ctx) => {
+  try {
+    const requesterId = ctx.from.id;
+
+    // Hanya admin yang bisa menjalankan perintah ini
+    if (!adminIds.includes(requesterId)) {
+      return ctx.reply('🚫 Anda tidak memiliki izin untuk melakukan tindakan ini.');
+    }
+
+    // Ambil ID Telegram dari argumen
+    const args = ctx.message.text.split(' ');
+    if (args.length < 2) {
+      return ctx.reply('❌ Format salah. Gunakan perintah:\n/delressel <id_telegram_user>');
+    }
+
+    const targetId = args[1];
+
+    // Cek apakah file ressel.db ada
+    if (!fs.existsSync(resselFilePath)) {
+      return ctx.reply('📁 File reseller belum dibuat.');
+    }
+
+    // Baca file dan filter ulang tanpa targetId
+    const fileContent = fs.readFileSync(resselFilePath, 'utf8');
+    const resellerList = fileContent.split('\n').filter(line => line.trim() !== '' && line.trim() !== targetId);
+
+    // Tulis ulang file dengan data yang sudah difilter
+    fs.writeFileSync(resselFilePath, resellerList.join('\n') + (resellerList.length ? '\n' : ''));
+
+    ctx.reply(`✅ User dengan ID ${targetId} berhasil dihapus dari daftar reseller.`);
+
+  } catch (e) {
+    logger.error('❌ Error di command /delressel:', e.message);
+    ctx.reply('❌ Terjadi kesalahan saat menjalankan perintah.');
+  }
+});
+
+
+bot.action('service_trial', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await handleServiceAction(ctx, 'trial');
+});
+
 bot.action('service_create', async (ctx) => {
   if (!ctx || !ctx.match) {
     return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
@@ -820,12 +1013,100 @@ bot.action('service_renew', async (ctx) => {
   await handleServiceAction(ctx, 'renew');
 });
 
+bot.action('service_del', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await handleServiceAction(ctx, 'del');
+});
+
+bot.action('service_lock', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await handleServiceAction(ctx, 'lock');
+});
+
+bot.action('service_unlock', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  } 
+  await handleServiceAction(ctx, 'unlock');
+});
+
+const { exec } = require('child_process');
+
+bot.action('cek_service', async (ctx) => {
+  try {
+    const message = await ctx.reply('⏳ Sedang mengecek status server...');
+
+    exec('chmod +x cek-port.sh && bash cek-port.sh', (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Gagal menjalankan skrip: ${error.message}`);
+        return ctx.reply('❌ Terjadi kesalahan saat menjalankan pengecekan.');
+      }
+
+      if (stderr) {
+        console.error(`Error dari skrip: ${stderr}`);
+        return ctx.reply('❌ Ada output error dari skrip pengecekan.');
+      }
+
+      // Karena output bash mengandung kode warna ANSI, kita hapus supaya rapi
+      const cleanOutput = stdout.replace(/\x1b\[[0-9;]*m/g, '');
+
+      ctx.reply(`📡 *Hasil Cek Port:*\n\n\`\`\`\n${cleanOutput}\n\`\`\``, {
+        parse_mode: 'Markdown'
+      });
+    });
+  } catch (err) {
+    console.error(err);
+    ctx.reply('❌ Gagal menjalankan pengecekan server.');
+  }
+});
+
+
 bot.action('send_main_menu', async (ctx) => {
   if (!ctx || !ctx.match) {
     return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
   }
   await sendMainMenu(ctx);
 });
+
+bot.action('trial_vmess', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'trial', 'vmess');
+});
+
+bot.action('trial_vless', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'trial', 'vless');
+});
+
+bot.action('trial_trojan', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'trial', 'trojan');
+});
+
+bot.action('trial_shadowsocks', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'trial', 'shadowsocks');
+});
+
+bot.action('trial_ssh', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'trial', 'ssh');
+});
+
 
 bot.action('create_vmess', async (ctx) => {
   if (!ctx || !ctx.match) {
@@ -861,6 +1142,95 @@ bot.action('create_ssh', async (ctx) => {
   }
   await startSelectServer(ctx, 'create', 'ssh');
 });
+
+//DELETE SSH
+bot.action('del_ssh', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'del', 'ssh');
+});
+
+bot.action('del_vmess', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'del', 'vmess');
+});
+
+bot.action('del_vless', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'del', 'vless');
+});
+
+bot.action('del_trojan', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'del', 'trojan');
+});
+//DELETE BREAK
+
+//LOCK
+bot.action('lock_ssh', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'lock', 'ssh');
+});
+
+bot.action('lock_vmess', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'lock', 'vmess');
+});
+
+bot.action('lock_vless', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'lock', 'vless');
+});
+
+bot.action('lock_trojan', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'lock', 'trojan');
+});
+//LOCK BREAK
+//UNLOCK
+bot.action('unlock_ssh', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'unlock', 'ssh');
+});
+
+bot.action('unlock_vmess', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'unlock', 'vmess');
+});
+
+bot.action('unlock_vless', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'unlock', 'vless');
+});
+
+bot.action('unlock_trojan', async (ctx) => {
+  if (!ctx || !ctx.match) {
+    return ctx.reply('❌ *GAGAL!* Terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi nanti.', { parse_mode: 'Markdown' });
+  }
+  await startSelectServer(ctx, 'unlock', 'trojan');
+});
+//UNLOCK BREAK
 
 bot.action('renew_vmess', async (ctx) => {
   if (!ctx || !ctx.match) {
@@ -985,6 +1355,7 @@ bot.action(/navigate_(\w+)_(\w+)_(\d+)/, async (ctx) => {
   const [, action, type, page] = ctx.match;
   await startSelectServer(ctx, action, type, parseInt(page, 10));
 });
+
 bot.action(/(create|renew)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, async (ctx) => {
   const action = ctx.match[1];
   const type = ctx.match[2];
@@ -1011,18 +1382,294 @@ bot.action(/(create|renew)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, 
     await ctx.reply('👤 *Masukkan username:*', { parse_mode: 'Markdown' });
   });
 });
+
+// 1. Saat tombol ditekan: atur state dan minta username
+bot.action(/(trial)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, async (ctx) => {
+  const [action, type, serverId] = [ctx.match[1], ctx.match[2], ctx.match[3]];
+
+  userState[ctx.chat.id] = {
+    step: `username_${action}_${type}`,
+    serverId, type, action
+  };
+
+  // Kirim pesan konfirmasi palsu
+  await ctx.reply(
+    `⚠️ *PERHATIAN*\n\n` +
+    `Anda sedang membuat akun *TRIAL ${type.toUpperCase()}* di server *${serverId}*.\n\n` +
+    `Layanan trial hanya berlaku *1x per hari* dan akan aktif selama 3 Jam.\n\n` +
+        `Kecuali User RESSEL VPN.\n\n` +
+    `Lanjutkan hanya jika Anda sudah yakin.`,
+    { parse_mode: 'Markdown' }
+  );
+
+  // Lanjut langsung ke input username
+  await ctx.reply('👤 *Konfirmasi (yes):*', { parse_mode: 'Markdown' });
+});
+
+bot.action(/(del)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, async (ctx) => {
+  const [action, type, serverId] = [ctx.match[1], ctx.match[2], ctx.match[3]];
+
+  userState[ctx.chat.id] = {
+    step: `username_${action}_${type}`,
+    serverId, type, action
+  };
+  await ctx.reply('👤 *Masukkan username yang ingin dihapus:*', { parse_mode: 'Markdown' });
+});
+bot.action(/(unlock)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, async (ctx) => {
+  const [action, type, serverId] = [ctx.match[1], ctx.match[2], ctx.match[3]];
+
+  userState[ctx.chat.id] = {
+    step: `username_${action}_${type}`,
+    serverId, type, action
+  };
+  await ctx.reply('👤 *Masukkan username yang ingin dibuka:*', { parse_mode: 'Markdown' });
+});
+bot.action(/(lock)_username_(vmess|vless|trojan|shadowsocks|ssh)_(.+)/, async (ctx) => {
+  const [action, type, serverId] = [ctx.match[1], ctx.match[2], ctx.match[3]];
+
+  userState[ctx.chat.id] = {
+    step: `username_${action}_${type}`,
+    serverId, type, action
+  };
+  await ctx.reply('👤 *Masukkan username yang ingin dikunci:*', { parse_mode: 'Markdown' });
+});
+
 bot.on('text', async (ctx) => {
   const state = userState[ctx.chat.id];
 
   if (!state) return; 
+    const text = ctx.message.text.trim();
 
+    if (state.step.startsWith('username_trial_')) {
+  const username = text;
+
+  // Validasi username
+  if (!/^[a-z0-9]{3,20}$/.test(username)) {
+    return ctx.reply('❌ *Username tidak valid. Gunakan huruf kecil dan angka (3–20 karakter).*', { parse_mode: 'Markdown' });
+  }
+
+ const resselDbPath = './ressel.db';
+const idUser = ctx.from.id.toString().trim();
+
+// Baca file reseller
+fs.readFile(resselDbPath, 'utf8', async (err, data) => {
+  if (err) {
+    logger.error('❌ Gagal membaca file ressel.db:', err.message);
+    return ctx.reply('❌ *Terjadi kesalahan saat membaca data reseller.*', { parse_mode: 'Markdown' });
+  }
+
+  const resselList = data.split('\n').map(line => line.trim()).filter(Boolean);
+  const isRessel = resselList.includes(idUser);
+
+  // Cek jika bukan reseller, maka periksa apakah sudah pernah trial hari ini
+  if (!isRessel) {
+    const sudahPakai = await checkTrialAccess(ctx.from.id);
+    if (sudahPakai) {
+      return ctx.reply('❌ *Anda sudah menggunakan fitur trial hari ini. Silakan coba lagi besok.*', { parse_mode: 'Markdown' });
+    }
+  }
+
+    // Lanjut buat trial
+    const { type, serverId } = state;
+    delete userState[ctx.chat.id];
+
+    try {
+      const password = 'none', exp = 'none', iplimit = 'none';
+
+      const delFunctions = {
+        vmess: trialvmess,
+        vless: trialvless,
+        trojan: trialtrojan,
+        shadowsocks: trialshadowsocks,
+        ssh: trialssh
+      };
+
+      if (delFunctions[type]) {
+        const msg = await delFunctions[type](username, password, exp, iplimit, serverId);
+        await recordAccountTransaction(ctx.from.id, type);
+        await saveTrialAccess(ctx.from.id); // Simpan tanggal trial
+        await ctx.reply(msg, { parse_mode: 'Markdown' });
+        logger.info(`✅ Trial ${type} oleh ${ctx.from.id}`);
+      }
+
+    } catch (err) {
+      logger.error('❌ Gagal hapus akun:', err.message);
+      await ctx.reply('❌ *Terjadi kesalahan saat menghapus akun.*', { parse_mode: 'Markdown' });
+    }
+  });
+  return;
+}
+
+    if (state.step.startsWith('username_unlock_')) {
+    const username = text;
+    // Validasi username (hanya huruf kecil dan angka, 3-20 karakter)
+    if (!/^[a-z0-9]{3,20}$/.test(username)) {
+      return ctx.reply('❌ *Username tidak valid. Gunakan huruf kecil dan angka (3–20 karakter).*', { parse_mode: 'Markdown' });
+    }
+       //izin ressel saja
+    const resselDbPath = './ressel.db';
+    fs.readFile(resselDbPath, 'utf8', async (err, data) => {
+      if (err) {
+        logger.error('❌ Gagal membaca file ressel.db:', err.message);
+        return ctx.reply('❌ *Terjadi kesalahan saat membaca data reseller.*', { parse_mode: 'Markdown' });
+      }
+
+      const idUser = ctx.from.id.toString().trim();
+      const resselList = data.split('\n').map(line => line.trim()).filter(Boolean);
+
+      console.log('🧪 ID Pengguna:', idUser);
+      console.log('📂 Daftar Ressel:', resselList);
+
+      const isRessel = resselList.includes(idUser);
+
+      if (!isRessel) {
+        return ctx.reply('❌ *Fitur ini hanya untuk Ressel VPN.*', { parse_mode: 'Markdown' });
+      }
+  //izin ressel saja
+    const { type, serverId } = state;
+    delete userState[ctx.chat.id];
+
+    let msg = 'none';
+    try {
+      const password = 'none', exp = 'none', iplimit = 'none';
+
+      const delFunctions = {
+        vmess: unlockvmess,
+        vless: unlockvless,
+        trojan: unlocktrojan,
+        shadowsocks: unlockshadowsocks,
+        ssh: unlockssh
+      };
+
+      if (delFunctions[type]) {
+        msg = await delFunctions[type](username, password, exp, iplimit, serverId);
+        await recordAccountTransaction(ctx.from.id, type);
+      }
+
+      await ctx.reply(msg, { parse_mode: 'Markdown' });
+      logger.info(`✅ Akun ${type} berhasil unlock oleh ${ctx.from.id}`);
+    } catch (err) {
+      logger.error('❌ Gagal hapus akun:', err.message);
+      await ctx.reply('❌ *Terjadi kesalahan saat menghapus akun.*', { parse_mode: 'Markdown' });
+    }});
+    return; // Penting! Jangan lanjut ke case lain
+  }
+    if (state.step.startsWith('username_lock_')) {
+    const username = text;
+    // Validasi username (hanya huruf kecil dan angka, 3-20 karakter)
+    if (!/^[a-z0-9]{3,20}$/.test(username)) {
+      return ctx.reply('❌ *Username tidak valid. Gunakan huruf kecil dan angka (3–20 karakter).*', { parse_mode: 'Markdown' });
+    }
+       //izin ressel saja
+    const resselDbPath = './ressel.db';
+    fs.readFile(resselDbPath, 'utf8', async (err, data) => {
+      if (err) {
+        logger.error('❌ Gagal membaca file ressel.db:', err.message);
+        return ctx.reply('❌ *Terjadi kesalahan saat membaca data reseller.*', { parse_mode: 'Markdown' });
+      }
+
+      const idUser = ctx.from.id.toString().trim();
+      const resselList = data.split('\n').map(line => line.trim()).filter(Boolean);
+
+      console.log('🧪 ID Pengguna:', idUser);
+      console.log('📂 Daftar Ressel:', resselList);
+
+      const isRessel = resselList.includes(idUser);
+
+      if (!isRessel) {
+        return ctx.reply('❌ *Fitur ini hanya untuk Ressel VPN.*', { parse_mode: 'Markdown' });
+      }
+  //izin ressel saja
+    const { type, serverId } = state;
+    delete userState[ctx.chat.id];
+
+    let msg = 'none';
+    try {
+      const password = 'none', exp = 'none', iplimit = 'none';
+
+      const delFunctions = {
+        vmess: lockvmess,
+        vless: lockvless,
+        trojan: locktrojan,
+        shadowsocks: lockshadowsocks,
+        ssh: lockssh
+      };
+
+      if (delFunctions[type]) {
+        msg = await delFunctions[type](username, password, exp, iplimit, serverId);
+        await recordAccountTransaction(ctx.from.id, type);
+      }
+
+      await ctx.reply(msg, { parse_mode: 'Markdown' });
+      logger.info(`✅ Akun ${type} berhasil di kunci oleh ${ctx.from.id}`);
+    } catch (err) {
+      logger.error('❌ Gagal hapus akun:', err.message);
+      await ctx.reply('❌ *Terjadi kesalahan saat menghapus akun.*', { parse_mode: 'Markdown' });
+    }});
+    return; // Penting! Jangan lanjut ke case lain
+  }
+  if (state.step.startsWith('username_del_')) {
+    const username = text;
+    // Validasi username (hanya huruf kecil dan angka, 3-20 karakter)
+    if (!/^[a-z0-9]{3,20}$/.test(username)) {
+      return ctx.reply('❌ *Username tidak valid. Gunakan huruf kecil dan angka (3–20 karakter).*', { parse_mode: 'Markdown' });
+    }
+       //izin ressel saja
+    const resselDbPath = './ressel.db';
+    fs.readFile(resselDbPath, 'utf8', async (err, data) => {
+      if (err) {
+        logger.error('❌ Gagal membaca file ressel.db:', err.message);
+        return ctx.reply('❌ *Terjadi kesalahan saat membaca data reseller.*', { parse_mode: 'Markdown' });
+      }
+
+      const idUser = ctx.from.id.toString().trim();
+      const resselList = data.split('\n').map(line => line.trim()).filter(Boolean);
+
+      console.log('🧪 ID Pengguna:', idUser);
+      console.log('📂 Daftar Ressel:', resselList);
+
+      const isRessel = resselList.includes(idUser);
+
+      if (!isRessel) {
+        return ctx.reply('❌ *Fitur ini hanya untuk Ressel VPN.*', { parse_mode: 'Markdown' });
+      }
+  //izin ressel saja
+    const { type, serverId } = state;
+    delete userState[ctx.chat.id];
+
+    let msg = 'none';
+    try {
+      const password = 'none', exp = 'none', iplimit = 'none';
+
+      const delFunctions = {
+        vmess: delvmess,
+        vless: delvless,
+        trojan: deltrojan,
+        shadowsocks: delshadowsocks,
+        ssh: delssh
+      };
+
+      if (delFunctions[type]) {
+        msg = await delFunctions[type](username, password, exp, iplimit, serverId);
+        await recordAccountTransaction(ctx.from.id, type);
+      }
+
+      await ctx.reply(msg, { parse_mode: 'Markdown' });
+      logger.info(`✅ Akun ${type} berhasil dihapus oleh ${ctx.from.id}`);
+    } catch (err) {
+      logger.error('❌ Gagal hapus akun:', err.message);
+      await ctx.reply('❌ *Terjadi kesalahan saat menghapus akun.*', { parse_mode: 'Markdown' });
+    }});
+    return; // Penting! Jangan lanjut ke case lain
+  }
   if (state.step.startsWith('username_')) {
-    state.username = ctx.message.text.trim();
+    state.username = text;
+
     if (!state.username) {
       return ctx.reply('❌ *Username tidak valid. Masukkan username yang valid.*', { parse_mode: 'Markdown' });
     }
-    if (state.username.length < 3 || state.username.length > 20) {
-      return ctx.reply('❌ *Username harus terdiri dari 3 hingga 20 karakter.*', { parse_mode: 'Markdown' });
+    if (state.username.length < 4 || state.username.length > 20) {
+      return ctx.reply('❌ *Username harus terdiri dari 4 hingga 20 karakter.*', { parse_mode: 'Markdown' });
     }
     if (/[A-Z]/.test(state.username)) {
       return ctx.reply('❌ *Username tidak boleh menggunakan huruf kapital. Gunakan huruf kecil saja.*', { parse_mode: 'Markdown' });
@@ -1048,8 +1695,8 @@ bot.on('text', async (ctx) => {
     if (!state.password) {
       return ctx.reply('❌ *Password tidak valid. Masukkan password yang valid.*', { parse_mode: 'Markdown' });
     }
-    if (state.password.length < 6) {
-      return ctx.reply('❌ *Password harus terdiri dari minimal 6 karakter.*', { parse_mode: 'Markdown' });
+    if (state.password.length < 3) {
+      return ctx.reply('❌ *Password harus terdiri dari minimal 3 karakter.*', { parse_mode: 'Markdown' });
     }
     if (/[^a-zA-Z0-9]/.test(state.password)) {
       return ctx.reply('❌ *Password tidak boleh mengandung karakter khusus atau spasi.*', { parse_mode: 'Markdown' });
@@ -1064,6 +1711,9 @@ bot.on('text', async (ctx) => {
     const exp = parseInt(expInput, 10);
     if (isNaN(exp) || exp <= 0) {
       return ctx.reply('❌ *Masa aktif tidak valid. Masukkan angka yang valid.*', { parse_mode: 'Markdown' });
+    }
+    if (exp < 15) {
+     return ctx.reply('❌ *Masa aktif minimal 15 hari.*', { parse_mode: 'Markdown' });
     }
     if (exp > 365) {
       return ctx.reply('❌ *Masa aktif tidak boleh lebih dari 365 hari.*', { parse_mode: 'Markdown' });
@@ -1098,7 +1748,6 @@ bot.on('text', async (ctx) => {
 
         const harga = server.harga;
         const totalHarga = harga * state.exp; 
-
         db.get('SELECT saldo FROM users WHERE user_id = ?', [ctx.from.id], async (err, user) => {
           if (err) {
             logger.error('⚠️ Kesalahan saat mengambil saldo pengguna:', err.message);
@@ -1110,7 +1759,6 @@ bot.on('text', async (ctx) => {
           }
 
           const saldo = user.saldo;
-
           if (saldo < totalHarga) {
             return ctx.reply('❌ *Saldo Anda tidak mencukupi untuk melakukan transaksi ini.*', { parse_mode: 'Markdown' });
           }
@@ -1151,25 +1799,37 @@ bot.on('text', async (ctx) => {
             }
             logger.info(`Account renewed and transaction recorded for user ${ctx.from.id}, type: ${type}`);
           }
-          db.run('UPDATE users SET saldo = saldo - ? WHERE user_id = ?', [totalHarga, ctx.from.id], (err) => {
-            if (err) {
-              logger.error('⚠️ Kesalahan saat mengurangi saldo pengguna:', err.message);
-              return ctx.reply('❌ *Terjadi kesalahan saat mengurangi saldo pengguna.*', { parse_mode: 'Markdown' });
-            }
-          });
-          db.run('UPDATE Server SET total_create_akun = total_create_akun + 1 WHERE id = ?', [serverId], (err) => {
-            if (err) {
-              logger.error('⚠️ Kesalahan saat menambahkan total_create_akun:', err.message);
-              return ctx.reply('❌ *Terjadi kesalahan saat menambahkan total_create_akun.*', { parse_mode: 'Markdown' });
-            }
-          });
+//SALDO DATABES
+// setelah bikin akun (create/renew), kita cek hasilnya
+if (msg.includes('❌')) {
+  logger.error(`🔄 Rollback saldo user ${ctx.from.id}, type: ${type}, server: ${serverId}, respon: ${msg}`);
+  return ctx.reply(msg, { parse_mode: 'Markdown' });
+}
 
-          await ctx.reply(msg, { parse_mode: 'Markdown' });
-          delete userState[ctx.chat.id];
+// kalau sampai sini artinya tidak ada ❌, transaksi sukses
+logger.info(`✅ Transaksi sukses untuk user ${ctx.from.id}, type: ${type}, server: ${serverId}`);
+
+db.run('UPDATE users SET saldo = saldo - ? WHERE user_id = ?', [totalHarga, ctx.from.id], (err) => {
+  if (err) {
+    logger.error('⚠️ Kesalahan saat mengurangi saldo pengguna:', err.message);
+    return ctx.reply('❌ *Terjadi kesalahan saat mengurangi saldo pengguna.*', { parse_mode: 'Markdown' });
+  }
+});
+
+db.run('UPDATE Server SET total_create_akun = total_create_akun + 1 WHERE id = ?', [serverId], (err) => {
+  if (err) {
+    logger.error('⚠️ Kesalahan saat menambahkan total_create_akun:', err.message);
+  }
+});
+
+await ctx.reply(msg, { parse_mode: 'Markdown' });
+delete userState[ctx.chat.id];
+//SALDO DATABES
+          });
         });
       });
-    });
-  } else if (state.step === 'addserver') {
+    } 
+  else if (state.step === 'addserver') {
     const domain = ctx.message.text.trim();
     if (!domain) {
       await ctx.reply('⚠️ *Domain tidak boleh kosong.* Silakan masukkan domain server yang valid.', { parse_mode: 'Markdown' });
@@ -1253,7 +1913,6 @@ bot.on('text', async (ctx) => {
     delete userState[ctx.chat.id];
   }
 });
-
 
 bot.action('addserver', async (ctx) => {
   try {
@@ -2180,8 +2839,8 @@ async function handleDepositState(ctx, userId, data) {
     if (currentAmount.length === 0) {
       return await ctx.answerCbQuery('⚠️ Jumlah tidak boleh kosong!', { show_alert: true });
     }
-    if (parseInt(currentAmount) < 100) {
-      return await ctx.answerCbQuery('⚠️ Jumlah minimal adalah 10.000 !', { show_alert: true });
+    if (parseInt(currentAmount) < 5000) {
+      return await ctx.answerCbQuery('⚠️ Jumlah minimal adalah 5.000 !', { show_alert: true });
     }
     global.depositState[userId].action = 'confirm_amount';
     await processDeposit(ctx, currentAmount);
@@ -2542,25 +3201,23 @@ async function checkQRISStatus() {
 
       try {
        const qs = require('qs');
-  const data = qs.stringify({
-    'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
-    'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
-    'phone_model': '23108RN04Y',
-    'requests[0]': 'account',
-    'requests[qris_history][page]': '1',
-    'requests[qris_history][jumlah]': '',
-    'requests[qris_history][keterangan]': '',
-    'requests[qris_history][dari_tanggal]': '',
-    'requests[qris_history][ke_tanggal]': '',
-    'phone_android_version': '15',
-    'app_version_code': '250711',
-    'auth_username': 'arivpnstore',
-    'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
-    'app_version_name': '25.07.11',
-    'ui_mode': 'light'
-  });;
+       const data = qs.stringify({
+  'app_reg_id': 'dzW47KqtQeWejrTm62g62K:APA91bEkwrdr00p6IKNjudPuh-CvG1By-gALybvw9GqyhjhVkBGc4TiXtqAlj9DUldL6-1lFphq6E2UPCZV4QcLxEFT0MEFBHdzesT2wzL9ChW--iIqqg0I',
+  'phone_uuid': 'dzW47KqtQeWejrTm62g62K',
+  'phone_model': '23108RN04Y',
+  'requests[qris_history][keterangan]': '',
+  'requests[qris_history][jumlah]': '',
+  'request_time': '1755775293973',
+  'phone_android_version': '15',
+  'app_version_code': '999999',
+  'auth_username': 'arivpnstore',
+  'requests[qris_history][page]': '1',
+  'auth_token': '1540779:fay5iZtNeIqKcrWPxSCGTs2o41Jj7hEm',
+  'app_version_name': '99.99.99',
+  'ui_mode': 'dark'
+});;
 
-        const resultcek = await axios.post('https://app.orderkuota.com/api/v2/get', data, {
+        const resultcek = await axios.post('https://app.orderkuota.com/api/v2/qris/mutasi/1540779', data, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             'Accept-Encoding': 'gzip',
@@ -2568,6 +3225,8 @@ async function checkQRISStatus() {
           }
         });
 
+        // ✅ Tambahkan log respons penuh biar bisa debug
+       //console.log("Full API Response:", resultcek);
         const list = resultcek.data?.qris_history?.results || [];
         const lastTen = list.slice(0, 10);
         const expectedAmount = deposit.amount;
