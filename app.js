@@ -336,31 +336,36 @@ const statusReseller = isReseller ? 'Reseller' : 'Bukan Reseller';
 
   const messageText = `
 ╭─ <b>⚡ BOT VPN ${NAMA_STORE} ⚡</b>
-├ Bot VPN Premium dengan sistem otomatis untuk
-├ pembelian layanan VPN berkualitas tinggi
-└ Dapatkan akses internet cepat & aman dengan layanan VPN terpercaya!
+├ Bot VPN Premium dengan sistem otomatis
+├ Pembelian layanan VPN berkualitas tinggi
+└ Akses internet cepat & aman dengan server terpercaya! 
 
-<b>Hai, Member <code>${userName}</code>!</b>
+<b>👋 Hai, Member <code>${userName}</code>!</b>
 ID: <code>${userId}</code>
 Saldo: <code>Rp ${saldo}</code>
 Status: <code>${statusReseller}</code>
 
-<blockquote> 📊 <b>Statistik Anda</b>
-• Hari Ini: ${userToday} akun
-• Minggu Ini: ${userWeek} akun
-• Bulan Ini: ${userMonth} akun
+<blockquote>📊 <b>Statistik Anda</b>
+• Hari Ini    : ${userToday} akun
+• Minggu Ini  : ${userWeek} akun
+• Bulan Ini   : ${userMonth} akun
 
 🌐 <b>Statistik Global</b>
-• Hari Ini: ${globalToday} akun
-• Minggu Ini: ${globalWeek} akun
-• Bulan Ini: ${globalMonth} akun
+• Hari Ini    : ${globalToday} akun
+• Minggu Ini  : ${globalWeek} akun
+• Bulan Ini   : ${globalMonth} akun
 </blockquote>
+
+⚙️ <b>COMMAND</b>
+• 🏠 Menu Utama   : /start
+• 🔑 Menu Admin   : /admin
+• 🛡️ Admin Panel  : /helpadmin
 
 👨‍💻 <b>Pembuat:</b> @ARI_VPN_STORE
 🛠️ <b>Credit:</b> ARI STORE × API POTATO
 🔧 <b>Base:</b> FighterTunnel
-👥 Pengguna BOT: ${jumlahPengguna}
-⏱️ Latency: ${latency} ms
+👥 <b>Pengguna BOT:</b> ${jumlahPengguna}
+⏱️ <b>Latency:</b> ${latency} ms
 ──────────────────────────`;
 
   const keyboard = [
