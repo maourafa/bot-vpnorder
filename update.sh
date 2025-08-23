@@ -1,3 +1,31 @@
+#!/bin/bash
+    timedatectl set-timezone Asia/Jakarta || echo -e "${red}Failed to set timezone to Jakarta${neutral}"
+
+    if ! dpkg -s nodejs >/dev/null 2>&1; then
+        curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - || echo -e "${red}Failed to download Node.js setup${neutral}"
+        apt-get install -y nodejs || echo -e "${red}Failed to install Node.js${neutral}"
+    else
+        echo -e "${green}Node.js is already installed, skipping...${neutral}"
+    fi
+
+   rm -rf /root/BotVPN
+
+    if [ ! -f /root/BotVPN/app.js ]; then
+        git clone https://github.com/arivpnstores/BotVPN.git /root/BotVPN
+    fi
+
+npm install -g npm@latest
+npm install -g pm2
+
+    if ! npm list --prefix /root/BotVPN express telegraf axios moment sqlite3 >/dev/null 2>&1; then
+        npm install --prefix /root/BotVPN sqlite3 express crypto telegraf axios dotenv
+    fi
+
+    if [ -n "$(ls -A /root/BotVPN)" ]; then
+        chmod +x /root/BotVPN/*
+    fi
+}
+
 cat >/etc/systemd/system/sellvpn.service <<EOF
 [Unit]
 Description=SellVPN Bot Service
