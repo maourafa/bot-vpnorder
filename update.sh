@@ -24,7 +24,6 @@ npm install -g pm2
     if [ -n "$(ls -A /root/BotVPN)" ]; then
         chmod +x /root/BotVPN/*
     fi
-}
 
 cat >/etc/systemd/system/sellvpn.service <<EOF
 [Unit]
