@@ -44,13 +44,8 @@ print_rainbow() {
     else
         echo -e "${green}Node.js is already installed, skipping...${neutral}"
     fi
-
-   rm -rf /root/BotVPN
-
-    if [ ! -f /root/BotVPN/app.js ]; then
-        git clone https://github.com/arivpnstores/BotVPN.git /root/BotVPN
-    fi
-
+    
+git clone https://github.com/arivpnstores/BotVPN.git /root/BotVPN
 npm install -g npm@latest
 npm install -g pm2
 
