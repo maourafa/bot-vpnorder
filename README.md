@@ -1,4 +1,5 @@
 ## SCRIPT AUTO ORDER BOT TELE BY API POTATO
+### RecodeBymaourafa
 ## Installasi Otomatis
 ```bash
 sysctl -w net.ipv6.conf.all.disable_ipv6=1 && sysctl -w net.ipv6.conf.default.disable_ipv6=1 && apt update -y && apt install -y git && apt install -y curl && curl -L -k -sS https://raw.githubusercontent.com/arivpnstores/BotVPN/main/start -o start && bash start sellvpn && [ $? -eq 0 ] && rm -f start
@@ -42,12 +43,13 @@ headers: {
 baris nomer 2553
 TUTORIAL AMBIL API CEK PEMBAYARAN VIA VIDIO : https://drive.google.com/file/d/1ugR_N5gEtcLx8TDsf7ecTFqYY3zrlHn-/view?usp=drivesdk
 
-CARA ISI INI BISA CHAT ADMIN https://t.me/ARI_VPN_STORE
+CARA ISI INI BISA CHAT mas ari https://t.me/ARI_VPN_STORE
 ATAU TANYA CHAT GPT
 CARA ISI API INI (tempel hasil seniff) KE SINI (tempel cekpembayaran di atas ini) GITU
 
 ## TAMPILAN SC BotVPN POTATO 
 <img src="./ss3.png" alt="image" width="300"/>
-kasih uang jajan : https://serverpremium.web.id/payment/
+kasih uang jajan ke mas ari: https://serverpremium.web.id/payment/
 
-Owner : https://t.me/ARI_VPN_STORE
+# credit
+arivpnstores https://t.me/ARI_VPN_STORE
