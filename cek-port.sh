@@ -2,15 +2,15 @@
 
 # Daftar server (bisa kamu ganti sesuai list)
 servers=(
-  "sgvip.domainmu.web.id"
-  "sgvvip.domainmu.web.id"
-  "sgvvip2.domainmu.web.id"
-  "sgvvip3.domainmu.web.id"
-  "team1.domainmu.web.id"
-  "team2.domainmu.web.id"
-  "idnusa.domainmu.web.id"
-  "idnusa2.domainmu.web.id"
-  "idnusastb.domainmu.web.id"
+  "maourafavpn.my.id"
+  "vip.maourafavpn.my.id"
+  "vip2.maourafavpn.my.id"
+  "vipstb.maourafavpn.my.id"
+  "vipstb2.maourafavpn.my.id"
+  "idnusa.maourafavpn.my.id"
+  "idnusa2.maourafavpn.my.id"
+  "id.maourafavpn.my.id"
+  "free.maourafavpn.my.id"
 )
 
 # Daftar port yang ingin dicek
